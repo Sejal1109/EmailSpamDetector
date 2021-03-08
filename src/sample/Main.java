@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Parent;
+import javafx.scene.paint.Color;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -23,7 +24,7 @@ import java.io.IOException;
 public class Main extends Application {
 
 
-    private TableView<TestFile> table = new TableView<TestFile>();
+    private TableView table = new TableView();
     final HBox hb = new HBox();
 
     public static void main(String[] args) {
@@ -36,65 +37,49 @@ public class Main extends Application {
         directoryChooser.setInitialDirectory(new File("."));
         File mainDirectory = directoryChooser.showDialog(stage);
         System.out.println(mainDirectory);
-        Scene scene = new Scene(new Group());
-        stage.setTitle("Spam MAster 1000");
-        stage.setWidth(1000);
+        Scene scene = new Scene(new Group(), Color.LIGHTSKYBLUE);
+        stage.setTitle("Spaminator");
+        stage.setWidth(833);
         stage.setHeight(600);
         WordCounter wordCounter = new WordCounter();
         final Label label = new Label("File Spam Probabilities");
         label.setFont(new Font("Franklin Gothic Medium", 20));
 
         wordCounter.parseFile(mainDirectory);
-        wordCounter.outputHamWordCount(new File("ham.txt"));
-        wordCounter.outputSpamWordCount(new File("spam.txt"));
+        //wordCounter.outputHamWordCount(new File("ham.txt"));
+        //wordCounter.outputSpamWordCount(new File("spam.txt"));
         wordCounter.calculateProb();
         DirectoryChooser directoryChooser2 = new DirectoryChooser();
         directoryChooser2.setInitialDirectory(new File("."));
         File mainDirectory2 = directoryChooser2.showDialog(stage);
         wordCounter.parseFile2(mainDirectory2);
 
-//
 
         TableColumn FileName = new TableColumn("File Name");
+        FileName.setMinWidth(350);
         FileName.setCellValueFactory(new PropertyValueFactory<>("filename"));
         TableColumn className = new TableColumn("Actual Class");
+        className.setMinWidth(300);
         className.setCellValueFactory(new PropertyValueFactory<>("actualClass"));
         TableColumn probability = new TableColumn("Spam Probability");
-        probability.setCellValueFactory(new PropertyValueFactory<>("spamProbability"));
+        probability.setMinWidth(150);
+        probability.setCellValueFactory(new PropertyValueFactory<>("roundedSpam"));
 
-        ObservableList<TestFile> probbs = WordCounter.getAllProb();
-        table.setItems(probbs);
+        table.setItems(WordCounter.FinalProbList);
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         table.getColumns().addAll(FileName, className, probability);
+        
+        double Accuracy = (double) (wordCounter.numTrueNegatives + wordCounter.numTruePositives)/ wordCounter.numFiles;
+        double Precision = (double) wordCounter.numTruePositives/ (wordCounter.numFalsePositives + wordCounter.numTruePositives) ;
 
-//        final TextField addSId = new TextField();
-//        addSId.setPromptText("Student ID");
-//        final TextField addAssing = new TextField();
-//        addAssing.setPromptText("Assignments/100");
-//
-//        final TextField addMid = new TextField();
-//        addMid.setPromptText("Midterm/100");
-//
-//        final TextField addFinEx = new TextField();
-//        addFinEx.setPromptText("Final Exam/100");
-//
-//        final Button addButton = new Button("Add");
-//        addButton.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent actionEvent) {
-//                float a = Float.parseFloat(addAssing.getText());
-//                float b = Float.parseFloat(addMid.getText());
-//                float c = Float.parseFloat(addFinEx.getText());
-//                marks.add(new StudentRecord(addSId.getText(), a, b, c));
-//                addSId.clear();
-//                addFinEx.clear();
-//                addMid.clear();
-//                addAssing.clear();
-//            }
-//        });
+        TextField textField1 = new TextField(String.valueOf(Accuracy));
+        TextField textField2 = new TextField(String.valueOf(Precision));
 
-//        hb.getChildren().addAll(addSId, addAssing, addMid, addFinEx, addButton);
-//        hb.setSpacing(3);
+        Label label1 = new Label("Accuracy: ");
+        Label label2 = new Label("Precision: ");
+
+
+        hb.getChildren().addAll(label1, textField1, label2, textField2);
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));

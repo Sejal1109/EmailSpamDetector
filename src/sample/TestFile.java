@@ -1,39 +1,32 @@
 package sample;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-
 import java.text.DecimalFormat;
-
 public class TestFile {
-	SimpleStringProperty filename;
-	SimpleDoubleProperty spamProbability;
-	SimpleStringProperty actualClass;
-	
+	private String filename;
+	private double spamProbability;
+	private String actualClass;
+	private String roundedSpam;
 	public TestFile(String filename, double spamProbability, String actualClass) {
-		this.filename = new SimpleStringProperty(filename);
-		this.spamProbability = new SimpleDoubleProperty(spamProbability);
-		this.actualClass = new SimpleStringProperty(actualClass);
+		this.filename = filename;
+		this.spamProbability = spamProbability;
+		this.actualClass = actualClass;
+		this.roundedSpam = getSpamProbRounded();
 	}
-	public String getFilename(){
-		return filename.get();
-	}
-	public double getSpamProbability(){ 
-		return spamProbability.get();
-	}
-	public String getSpamProbRounded(){
+	public String getFilename(){ return this.filename; }
+	public double getSpamProbability(){ return this.spamProbability; }
+	public String getSpamProbRounded() {
 		DecimalFormat df = new DecimalFormat("0.00000");
 		return df.format(this.spamProbability);
 	}
-	public String getActualClass(){
-		return actualClass.get();
-	} 
-	public void setFilename(String value) {
-		filename.set(value);
-	}
+	public String getActualClass(){return this.actualClass;} public
+	void setFilename(String value) { this.filename = value; }
 	public void setSpamProbability(double val) {
-		spamProbability.set(val);
+		this.spamProbability = val; }
+	public void setActualClass(String value) { this.actualClass =
+			value; }
+	public void setRoundedSpam(){
+		this.roundedSpam = getSpamProbRounded();
 	}
-	public void setActualClass(String value) { 
-		actualClass.set(value);
+	public String getRoundedSpam(){
+		return this.roundedSpam;
 	}
 }

@@ -11,19 +11,21 @@ public class WordCounter {
 	private Map<String, Integer> trainHamFreq;
 	private Map<String, Integer> trainSpamFreq;
 	private int spamFileNum = 0, hamFileNum = 0;
-	private Map<String, Double> probabiltySpam;
-	private Map<String, Double> probabiltyHam;
-	public static Map<String, Double> probabiltyFinalSpam;
-	public static ObservableList<TestFile> probs = FXCollections.observableArrayList();
-
+	private Map<String, Double> probabilitySpam;
+	private Map<String, Double> probabilityHam;
+	private Map<String, Double> probabilityFinalSpam;
+	public static ObservableList<TestFile> FinalProbList = FXCollections.observableArrayList();
 	private List<String> totWords = new ArrayList<String>();
-
+	public int numTruePositives = 0;
+	public int numTrueNegatives = 0;
+	public int numFiles = 0;
+	public int numFalsePositives = 0;
 	public WordCounter() {
 		trainHamFreq = new TreeMap<>();
 		trainSpamFreq = new TreeMap<>();
-		probabiltySpam = new TreeMap<>();
-		probabiltyHam = new TreeMap<>();
-		probabiltyFinalSpam = new TreeMap<>();
+		probabilitySpam = new TreeMap<>();
+		probabilityHam = new TreeMap<>();
+		probabilityFinalSpam = new TreeMap<>();
 	}
 
 	public void parseFile(File file) throws IOException {
@@ -78,30 +80,30 @@ public class WordCounter {
 			String word = x.getKey();
 			Integer value = x.getValue();
 			Double p = (double) value / spamFileNum;
-			probabiltySpam.put(word, p);
+			probabilitySpam.put(word, p);
 		}
 		for (Map.Entry<String, Integer> x : trainHamFreq.entrySet()) {
 			String word = x.getKey();
 			Integer value = x.getValue();
 			Double p = (double) value / hamFileNum;
-			probabiltyHam.put(word, p);
+			probabilityHam.put(word, p);
 		}
 		for (String word : totWords) {
 			double hamVal;
-			if (probabiltyHam.containsKey(word)) {
-				hamVal = probabiltyHam.get(word);
+			if (probabilityHam.containsKey(word)) {
+				hamVal = probabilityHam.get(word);
 			} else {
 				hamVal = 0;
 			}
 			double spamVal;
-			if (probabiltySpam.containsKey(word)) {
-				spamVal = probabiltySpam.get(word);
+			if (probabilitySpam.containsKey(word)) {
+				spamVal = probabilitySpam.get(word);
 			} else {
 				spamVal = 0;
 			}
 
 			double prob = spamVal / (spamVal + hamVal);
-			probabiltyFinalSpam.put(word, prob);
+			probabilityFinalSpam.put(word, prob);
 		}
 	}
 
@@ -129,138 +131,108 @@ public class WordCounter {
 		}
 	}
 
-	// public void printProb(){
-	// 	for(Map.Entry<String, Double> x: probabiltyFinalSpam.entrySet()){
-	// 		String word = x.getKey();
-	// 		Double val = x.getValue();
-	// 		System.out.println(word + ":" +val);
-	// 	}
-	// }
-
-	public void outputHamWordCount(File output) throws IOException {
-		System.out.println("Saving word counts to file:" + output.getAbsolutePath());
-		System.out.println("Total words:" + trainHamFreq.keySet().size());
-		int minCount = 2;
-		if (!output.exists()) {
-			output.createNewFile();
-			if (output.canWrite()) {
-				PrintWriter fileOutput = new PrintWriter(output);
-
-				Set<String> keys = trainHamFreq.keySet();
-				Iterator<String> keyIterator = keys.iterator();
-
-				while (keyIterator.hasNext()) {
-					String key = keyIterator.next();
-					int count = trainHamFreq.get(key);
-					// testing minimum number of occurances
-					if (count >= minCount) {
-						fileOutput.println(key + ": " + count);
-					}
-				}
-
-				fileOutput.close();
-			}
-		} else {
-			System.out.println("Error: the output file already exists: " + output.getAbsolutePath());
-		}
-
-	}
-
-	public void outputSpamWordCount(File output) throws IOException {
-		System.out.println("Saving word counts to file:" + output.getAbsolutePath());
-		System.out.println("Total words:" + trainSpamFreq.keySet().size());
-		int minCount = 2;
-		if (!output.exists()) {
-			output.createNewFile();
-			if (output.canWrite()) {
-				PrintWriter fileOutput = new PrintWriter(output);
-
-				Set<String> keys = trainSpamFreq.keySet();
-				Iterator<String> keyIterator = keys.iterator();
-
-				while (keyIterator.hasNext()) {
-					String key = keyIterator.next();
-					int count = trainSpamFreq.get(key);
-					// testing minimum number of occurances
-					if (count >= minCount) {
-						fileOutput.println(key + ": " + count);
-					}
-				}
-
-				fileOutput.close();
-			}
-		} else {
-			System.out.println("Error: the output file already exists: " + output.getAbsolutePath());
-		}
-
-	}
+//	public void outputHamWordCount(File output) throws IOException {
+//		System.out.println("Saving word counts to file:" + output.getAbsolutePath());
+//		System.out.println("Total words:" + trainHamFreq.keySet().size());
+//		int minCount = 2;
+//		if (!output.exists()) {
+//			output.createNewFile();
+//			if (output.canWrite()) {
+//				PrintWriter fileOutput = new PrintWriter(output);
+//
+//				Set<String> keys = trainHamFreq.keySet();
+//				Iterator<String> keyIterator = keys.iterator();
+//
+//				while (keyIterator.hasNext()) {
+//					String key = keyIterator.next();
+//					int count = trainHamFreq.get(key);
+//					// testing minimum number of occurances
+//					if (count >= minCount) {
+//						fileOutput.println(key + ": " + count);
+//					}
+//				}
+//
+//				fileOutput.close();
+//			}
+//		} else {
+//			System.out.println("Error: the output file already exists: " + output.getAbsolutePath());
+//		}
+//
+//	}
+//
+//	public void outputSpamWordCount(File output) throws IOException {
+//		System.out.println("Saving word counts to file:" + output.getAbsolutePath());
+//		System.out.println("Total words:" + trainSpamFreq.keySet().size());
+//		int minCount = 2;
+//		if (!output.exists()) {
+//			output.createNewFile();
+//			if (output.canWrite()) {
+//				PrintWriter fileOutput = new PrintWriter(output);
+//
+//				Set<String> keys = trainSpamFreq.keySet();
+//				Iterator<String> keyIterator = keys.iterator();
+//
+//				while (keyIterator.hasNext()) {
+//					String key = keyIterator.next();
+//					int count = trainSpamFreq.get(key);
+//					// testing minimum number of occurances
+//					if (count >= minCount) {
+//						fileOutput.println(key + ": " + count);
+//					}
+//				}
+//
+//				fileOutput.close();
+//			}
+//		} else {
+//			System.out.println("Error: the output file already exists: " + output.getAbsolutePath());
+//		}
+//
+//	}
 
 
 	//Working on Test directory
 	public void parseFile2(File file) throws IOException {
 		System.out.println("Starting parsing the file:" + file.getAbsolutePath());
-
+		numFiles++;
 		if (file.isDirectory()) {
 			//parse each file inside the directory
 			File[] content = file.listFiles();
 			for (File current : content) {
-				parseFile(current);
+				parseFile2(current);
 			}
-		} else if (file.getParent().equals("test\\spam")) {
-			Scanner scanner = new Scanner(file);
-			// scanning token by token
-			List<String> wordsInFile = new ArrayList<String>();
-			while (scanner.hasNext()) {
-				String token = scanner.next().toLowerCase();
-				//String token2 = token.toLowerCase();
-				if (isValidWord(token)) {
-					if (!wordsInFile.contains(token)) {
-						wordsInFile.add(token);
-					}
-				}
-			}
-			String temp = "Spam";
-			spamFileProb(wordsInFile, file, temp);
-			wordsInFile.clear();
-			scanner.close();
 		} else {
 			Scanner scanner = new Scanner(file);
 			// scanning token by token
-			List<String> wordsInFile = new ArrayList<String>();
+			Double n = 0.0;
 			while (scanner.hasNext()) {
 				String token = scanner.next().toLowerCase();
-
 				if (isValidWord(token)) {
-					if (!wordsInFile.contains(token)) {
-						wordsInFile.add(token);
+					//System.out.println("Valid!");
+					if (probabilityFinalSpam.containsKey(token)) {
+						double val = probabilityFinalSpam.get(token);
+						if(val != 0.0 && val != 1.0)
+							n += (Math.log(1 - val) - Math.log(val));
+					} else {
+						n += 0;
 					}
 				}
 			}
-			String temp = "Ham";
-			spamFileProb(wordsInFile, file, temp);
-			wordsInFile.clear();
-		}
-	}
+			scanner.close();
+			String temp = file.getParentFile().getName();
+			String temp2 = file.getName();
 
-	public static void spamFileProb(List<String> wordsList, File file, String t) {
-		Double n = 0.0;
-		for (String word : wordsList) {
-			if (probabiltyFinalSpam.containsKey(word)) {
-				double val = probabiltyFinalSpam.get(word);
-				n += (Math.log(1 - val) - Math.log(val));
-			} else {
-				n += 0;
+			double probFile = 1.0 / (1.0 + (Math.pow(Math.E, n)));
+			if(0.0 <= probFile && probFile <=0.5  && temp.equals("ham")){
+				numTrueNegatives++;
 			}
+			else if (probFile >= 0.5 && probFile <=1.0 && temp.equals("spam")){
+				numTruePositives++;
+			}
+			else if(temp.equals("ham") && probFile >= 0.5 &&probFile <= 1.0){
+				numFalsePositives++;
+			}
+			FinalProbList.add(new TestFile(temp2, probFile, temp));
+
 		}
-		double probFile = 1 / (Math.pow(Math.E, n));
-		addProbability(file.getName(), probFile, t);
-	}
-
-	public static void addProbability(String x, double y, String z) {
-		probs.add(new TestFile(x, y, z));
-	}
-
-	public static ObservableList<TestFile> getAllProb() {
-		return probs;
 	}
 }
