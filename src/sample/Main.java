@@ -68,7 +68,7 @@ public class Main extends Application {
         table.setItems(WordCounter.FinalProbList);
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         table.getColumns().addAll(FileName, className, probability);
-        
+
         double Accuracy = (double) (wordCounter.numTrueNegatives + wordCounter.numTruePositives)/ wordCounter.numFiles;
         double Precision = (double) wordCounter.numTruePositives/ (wordCounter.numFalsePositives + wordCounter.numTruePositives) ;
 
